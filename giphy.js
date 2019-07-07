@@ -1,7 +1,7 @@
 console.log("This Worked!");
 
 // Initial array of movies
-var animals = ["Cats", "Dogs", "Tigers", "Meer Cat"];
+var animals = ["Cats", "Dogs", "Tigers", "MeerCat"];
 
 // Function for displaying movie data
 function renderButtons() {
@@ -47,3 +47,55 @@ $("#add-button").on("click", function (event) {
 // Calling the renderButtons function at least once to display the initial list of movies
 renderButtons();
 $("#button-input").val("");
+
+// This function allows the user to click on a button and make an API call
+$(document).on("click", ".animal", function (event) {
+    var animalButton = $(this).text();
+    console.log(this);
+    console.log(animalButton);
+    // Storing our giphy API URL for a random cat image
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animalButton + "&api_key=xkVN1aICU0Smv71QT38YrVYUsE8L0SwN&limit=10";
+    console.log(queryURL);
+    // Perfoming an AJAX GET request to our queryURL
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    })
+
+        // After the data from the AJAX request comes back
+        .then(function (response) {
+            // Storing an array of results in the results variable
+            var results = response.data;
+
+            // Looping over every result item
+            for (var i = 0; i < results.length; i++) {
+
+                // Only taking action if the photo has an appropriate rating
+                //   if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                // Creating a div for the gif
+                var gifDiv = $("<div>");
+
+                // Storing the result item's rating
+                var rating = results[i].rating;
+
+                // Creating a paragraph tag with the result item's rating
+                var p = $("<p>").text("Rating: " + rating);
+
+                // Creating an image tag
+                var animalImage = $("<img>");
+
+                // Giving the image tag an src attribute of a proprty pulled off the
+                // result item
+                animalImage.attr("src", results[i].images.fixed_height.url);
+
+                // Appending the paragraph and personImage we created to the "gifDiv" div we created
+                gifDiv.append(p);
+                gifDiv.append(animalImage);
+
+                // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
+                $("#gifs-appear-here").prepend(gifDiv);
+                //   }
+            }
+        });
+
+});
